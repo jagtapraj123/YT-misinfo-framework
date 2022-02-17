@@ -1,10 +1,4 @@
-import {
-  List,
-  ListItem,
-  Divider,
-  ListItemText,
-  Button,
-} from "@mui/material";
+import { List, ListItem, Divider, ListItemText, Button } from "@mui/material";
 import Typography from "@mui/material/Typography";
 
 import React from "react";
@@ -44,17 +38,21 @@ function DatasetListView(props) {
                         variant="body2"
                         color="text.primary"
                       >
-                        {video.Topic.name + " — "}{" "}
+                        {video.tags &&
+                          video.tags.map((tag, i) => " " + tag + " ") +
+                            " — "}{" "}
+                        {video.Topic && video.Topic.name + " — "}{" "}
                         {(video.normalized_annotation === 0 && "Neutral") ||
                           (video.normalized_annotation === 1 &&
                             "Misinformation") ||
                           (video.normalized_annotation === -1 &&
                             "Debunking Misinformation")}{" "}
                         <Button
+                          size="small"
                           variant="text"
                           onClick={() => handleWrongDialogOpen(video)}
                         >
-                          Wrong?
+                          Don't Agree?
                         </Button>
                       </Typography>
                     </div>

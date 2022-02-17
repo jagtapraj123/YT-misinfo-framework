@@ -1,13 +1,17 @@
 import React from "react";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import {
+  Box,
+  List,
+  TextField,
+  Button,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  Typography,
+  Divider,
+} from "@mui/material";
 import axios from "axios";
 import PropTypes from "prop-types";
-import { Typography } from "@mui/material";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import WrongDialog from "./WrongDialog";
 
 class DetectPage extends React.Component {
@@ -19,10 +23,12 @@ class DetectPage extends React.Component {
       captions: {
         status: 2000,
       },
-      detection: false,
-      radioValue: "",
+      detection: [],
+      topic: "",
       valid: false,
       wrong: false,
+      title: null,
+      voting: null,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -43,11 +49,15 @@ class DetectPage extends React.Component {
     axios
       .post("http://127.0.0.1:5000/detect", {
         url: this.state.url,
-        topic: this.state.radioValue,
+        topic: this.state.topic,
       })
       .then((response) => {
         console.log("SUCCESS", response);
-        this.setState({ detection: response.data.detection });
+        this.setState({
+          detection: response.data.detection,
+          voting: response.data.voting,
+          title: response.data.Title,
+        });
         // setGetMessage(response);
       })
       .catch((error) => {
@@ -60,9 +70,9 @@ class DetectPage extends React.Component {
     console.log(event);
     this.setState({
       url: event.target.value,
-      valid: event.target.value !== "" && this.state.radioValue !== "",
+      valid: event.target.value !== "" && this.state.topic !== "",
     });
-    // if (this.state.url !== "" && this.state.radioValue !== ""){
+    // if (this.state.url !== "" && this.state.topic !== ""){
     //   this.setState({ valid: true });
     // }
     // else{
@@ -73,10 +83,10 @@ class DetectPage extends React.Component {
   handleRadioChange(event) {
     console.log(event);
     this.setState({
-      radioValue: event.target.value,
+      topic: event.target.value,
       valid: this.state.url !== "" && event.target.value !== "",
     });
-    // if (this.state.url !== "" && this.state.radioValue !== ""){
+    // if (this.state.url !== "" && this.state.topic !== ""){
     //   this.setState({ valid: true });
     // }
     // else{
@@ -94,12 +104,13 @@ class DetectPage extends React.Component {
     this.setState({ wrong: false });
   }
 
-  handleWrongDialogSubmit(vid_url, label, reason) {
+  handleWrongDialogSubmit(vid_url, topic, label, reason) {
     console.log(vid_url, label, reason);
     this.setState({ wrong: false });
     axios
       .post("http://127.0.0.1:5000/updateDataset", {
         url: vid_url,
+        topic: topic,
         suggestedLabel: label,
         reason: reason,
       })
@@ -160,9 +171,9 @@ class DetectPage extends React.Component {
           />
         </RadioGroup> */}
           <RadioGroup
-            aria-label="gender"
+            aria-label="topic"
             name="controlled-radio-buttons-group"
-            value={this.state.radioValue}
+            value={this.state.topic}
             onChange={this.handleRadioChange}
           >
             <FormControlLabel
@@ -171,7 +182,7 @@ class DetectPage extends React.Component {
               label="9/11 Conspiracy Theory"
             />
             <FormControlLabel
-              value="chentrails"
+              value="chemtrails"
               control={<Radio />}
               label="Chemtrails Conspiracy Theory"
             />
@@ -204,29 +215,68 @@ class DetectPage extends React.Component {
           ) : (
             <div></div>
           )}
-          <div>
-            {this.state.detection && (
-              <Box display="flex" alignItems="center" justifyContent="center">
-                <Typography component="span" variant="h5" color="text.primary">
-                  {(this.state.detection === 0 && "Neutral") ||
-                    (this.state.detection === 1 && "Misinformation") ||
-                    (this.state.detection === -1 && "Debunking Misinformation")}
-                  <Button
-                    variant="text"
-                    onClick={() =>
-                      this.handleWrongDialogOpen({
-                        Title: "Do you think the video is wrongly classified?",
-                        vid_url: this.state.url,
-                        normalized_annotation: this.state.detection,
-                      })
-                    }
+          {this.state.detection !== [] && (
+            <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+              {this.state.detection.map((det, i) => (
+                <div>
+                  <Box
+                    sx={{ flexDirection: "column", padding: 2 }}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
                   >
-                    Wrong?
-                  </Button>
-                </Typography>
-              </Box>
-            )}
-          </div>
+                    <Typography
+                      component="span"
+                      variant="h7"
+                      color="text.primary"
+                    >
+                      Model: {det.model}
+                    </Typography>
+                    <Typography
+                      component="span"
+                      variant="h5"
+                      color="text.primary"
+                    >
+                      {(det.value === 0 && "Neutral") ||
+                        (det.value === 1 && "Misinformation") ||
+                        (det.value === -1 && "Debunking Misinformation")}
+                      <Button
+                        variant="text"
+                        onClick={() =>
+                          this.handleWrongDialogOpen({
+                            Title: this.state.title,
+                            vid_url: this.state.url,
+                            Topic: { value: this.state.topic },
+                            normalized_annotation: det.value,
+                            voting: this.state.voting,
+                          })
+                        }
+                      >
+                        Don't agree?
+                      </Button>
+                    </Typography>
+                  </Box>
+                  <Divider />
+                </div>
+                // )) ||
+                //   // (typeof this.state.detection.value === "string" && (
+                //   //   <Box
+                //   //     display="flex"
+                //   //     alignItems="center"
+                //   //     justifyContent="center"
+                //   //   >
+                //   //     <Typography
+                //   //       component="span"
+                //   //       variant="h5"
+                //   //       color="text.primary"
+                //   //     >
+                //   //       {this.state.detection}
+                //   //     </Typography>
+                //   //   </Box>
+                //   // ))
+              ))}
+            </List>
+          )}
         </Box>
         {/* <Container
         > */}

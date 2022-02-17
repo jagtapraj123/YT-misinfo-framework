@@ -68,11 +68,13 @@ import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import axios from "axios";
-import DetectPage from './DetectPage';
+import DetectPage from "./DetectPage";
 import DatasetPage from "./DatasetPage";
 
-
 class App extends React.Component {
+  componentDidMount() {
+    document.title = "YT Misinformation Detection";
+  }
   constructor(props) {
     super(props);
     this.state = {
@@ -104,54 +106,56 @@ class App extends React.Component {
       });
   };
 
-    render() {
-        return (
-            <div>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                    <Tabs
-                        value={this.state.tabValue}
-                        onChange={this.handleTabChange}
-                        centered
-                    >
-                        <Tab label="Detect" />
-                        <Tab label="Dataset" />
-                    </Tabs>
-                </Box>
-                <TabPanel value={this.state.tabValue} index={0}>
-                    {/* Detect Tab */}
-                    {/* {this.detectPage} */}
-                    <DetectPage/>
-                </TabPanel>
-                <TabPanel value={this.state.tabValue} index={1}>
-                    <DatasetPage/>
-                    {/* <div>
+  render() {
+    return (
+      <div>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Tabs
+            value={this.state.tabValue}
+            onChange={this.handleTabChange}
+            centered
+          >
+            <Tab label="Detect" />
+            <Tab label="Dataset" />
+          </Tabs>
+        </Box>
+        <TabPanel value={this.state.tabValue} index={0}>
+          {/* Detect Tab */}
+          {/* {this.detectPage} */}
+          <DetectPage />
+        </TabPanel>
+        <TabPanel value={this.state.tabValue} index={1}>
+          <DatasetPage />
+          {/* <div>
                         {this.state.message.status === 200 ? (
                         <h3>{this.state.message.data.message}</h3>
                         ) : (
                         <h3>LOADING</h3>
                         )}
                     </div> */}
-                    {/* <Button onClick={this.onClick}>Click me</Button> */}
-                </TabPanel>
-            </div>
-        );
+          {/* <Button onClick={this.onClick}>Click me</Button> */}
+        </TabPanel>
+      </div>
+    );
   }
 }
 
 function TabPanel(props) {
   const { children, value, index } = props;
-  return (<div
+  return (
+    <div
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
     >
       {/* {value === index && ( */}
-        <Box sx={{ p: 3 }}>
-          <p>{children}</p>
-        </Box>
+      <Box sx={{ p: 3 }}>
+        <p>{children}</p>
+      </Box>
       {/* )} */}
-    </div>)
+    </div>
+  );
   // return <div>{value === index && <p>{children}</p>}</div>;
 }
 

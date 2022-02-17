@@ -1,4 +1,4 @@
-import { Box, Pagination, Button } from "@mui/material";
+import { Box, Pagination, Button, Divider, Typography } from "@mui/material";
 import React, { Component } from "react";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -8,6 +8,7 @@ import axios from "axios";
 import AddIcon from "@mui/icons-material/Add";
 import DownloadIcon from "@mui/icons-material/Download";
 import WrongDialog from "./WrongDialog";
+import AddVideoDialog from "./AddVideoDialog";
 
 export class DatasetPage extends Component {
   constructor(props) {
@@ -15,11 +16,13 @@ export class DatasetPage extends Component {
 
     this.state = {
       topics: [],
+      tags: [],
       topicFilter: [],
       page: 1,
       num_pages: 0,
       videoList: [],
       wrong: false,
+      add: false,
     };
 
     this.handlePageChange = this.handlePageChange.bind(this);
@@ -28,13 +31,17 @@ export class DatasetPage extends Component {
     this.handleWrongDialogClose = this.handleWrongDialogClose.bind(this);
     this.handleWrongDialogSubmit = this.handleWrongDialogSubmit.bind(this);
     this.extractJSON = this.extractJSON.bind(this);
+    this.handleAddVideoDialogOpen = this.handleAddVideoDialogOpen.bind(this);
+    this.handleAddVideoDialogClose = this.handleAddVideoDialogClose.bind(this);
+    this.handleAddVideoDialogSubmit =
+      this.handleAddVideoDialogSubmit.bind(this);
     this.init();
   }
 
   init() {
     axios.get("http://127.0.0.1:5000/getDataset").then((response) => {
       // console.log(response)
-      this.setState({ topics: response.data.topics });
+      this.setState({ topics: response.data.topics, tags: response.data.tags });
     });
   }
 
@@ -94,12 +101,13 @@ export class DatasetPage extends Component {
     this.setState({ wrong: false });
   }
 
-  handleWrongDialogSubmit(vid_url, label, reason) {
+  handleWrongDialogSubmit(vid_url, topic, label, reason) {
     console.log(vid_url, label, reason);
     this.setState({ wrong: false });
     axios
       .post("http://127.0.0.1:5000/updateDataset", {
         url: vid_url,
+        topic: topic,
         suggestedLabel: label,
         reason: reason,
       })
@@ -121,11 +129,38 @@ export class DatasetPage extends Component {
       .then((response) => {
         console.log(response);
         const blob = new Blob([response.data]);
-          let url = window.URL.createObjectURL(blob);
-          let a = document.createElement("a");
-          a.href = url;
-          a.download = "YT_Video_Dataset.json";
-          a.click();
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = "YT_Video_Dataset.json";
+        a.click();
+        // setGetMessage(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  handleAddVideoDialogOpen() {
+    this.setState({ add: true });
+  }
+
+  handleAddVideoDialogClose() {
+    this.setState({ add: false });
+  }
+
+  handleAddVideoDialogSubmit(url, selectedTags, newTags, label, reason) {
+    this.setState({ add: false });
+    axios
+      .post("http://127.0.0.1:5000/updateDataset", {
+        url: url,
+        tags: [selectedTags.concat(newTags.map((t) => t.text))],
+        suggestedLabel: label,
+        reason: reason,
+      })
+      .then((response) => {
+        console.log("SUCCESS", response.data);
+
         // setGetMessage(response);
       })
       .catch((error) => {
@@ -164,6 +199,7 @@ export class DatasetPage extends Component {
             style={{ marginLeft: 5, marginRight: 5 }}
             variant="outlined"
             startIcon={<AddIcon />}
+            onClick={this.handleAddVideoDialogOpen}
           >
             Add Video
           </Button>
@@ -191,6 +227,9 @@ export class DatasetPage extends Component {
               {/* {for (var i = 0; i < this.state.topicFilter.length; i++) {
                                 <FormControlLabel control={<Checkbox />} label="Label" />
                             }} */}
+              {this.state.topics.length > 0 && (
+                <Typography variant="h6">Topics:</Typography>
+              )}
               {this.state.topics.map((topic, i) => (
                 <FormControlLabel
                   control={
@@ -201,6 +240,25 @@ export class DatasetPage extends Component {
                     />
                   }
                   label={topic.name}
+                />
+              ))}
+              <Divider />
+              {/* {for (var i = 0; i < this.state.topicFilter.length; i++) {
+                                <FormControlLabel control={<Checkbox />} label="Label" />
+                            }} */}
+              {this.state.topics.length > 0 && (
+                <Typography variant="h6">Tags:</Typography>
+              )}
+              {this.state.tags.map((tag, i) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={this.state.topicFilter.includes(tag)}
+                      name={tag}
+                      onChange={this.handleFilterChange}
+                    />
+                  }
+                  label={tag}
                 />
               ))}
               {/* <FormControlLabel control={<Checkbox />} label="Label" />
@@ -235,6 +293,16 @@ export class DatasetPage extends Component {
             wrong={this.state.wrong}
             handleClose={this.handleWrongDialogClose}
             handleSubmit={this.handleWrongDialogSubmit}
+          />
+        )}
+
+        {this.state.add && (
+          <AddVideoDialog
+            open={this.state.add}
+            handleClose={this.handleAddVideoDialogClose}
+            handleSubmit={this.handleAddVideoDialogSubmit}
+            // topics={this.state.topics}
+            tags={this.state.tags}
           />
         )}
       </Box>
