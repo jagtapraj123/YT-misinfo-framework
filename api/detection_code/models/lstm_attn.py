@@ -36,8 +36,9 @@ class LSTMAttentionModel(nn.Module):
         attn_weights = torch.bmm(lstm_output, hidden.unsqueeze(2)).squeeze(2)
         soft_attn_weights = F.softmax(attn_weights, 1)
         new_hidden_state = torch.bmm(lstm_output.transpose(1, 2), soft_attn_weights.unsqueeze(2)).squeeze(2)
-
-        return new_hidden_state
+        print(soft_attn_weights.shape)
+        print(new_hidden_state.shape)
+        return new_hidden_state, soft_attn_weights
 
     def forward(self, input_sentences):
         input = self.embed(input_sentences)
@@ -47,7 +48,22 @@ class LSTMAttentionModel(nn.Module):
         # output = output.permute(1, 0, 2) # output.size() = (batch_size, num_seq, hidden_size)
         # print(output.shape, final_hidden_state.shape, final_cell_state.shape)
 
-        attn_output = self.attention_net(output, final_hidden_state)
+        attn_output, attention = self.attention_net(output, final_hidden_state)
         logits = self.label(attn_output)
 
-        return logits
+        return logits, attention
+
+    # def get_attention(self, input_sentences):
+    #     input = self.embed(input_sentences)
+    #     # input = input.permute(1, 0, 2)
+    #     # print(input.shape)
+    #     output, (final_hidden_state, final_cell_state) = self.lstm(input) # final_hidden_state.size() = (1, batch_size, hidden_size) 
+    #     # output = output.permute(1, 0, 2) # output.size() = (batch_size, num_seq, hidden_size)
+    #     # print(output.shape, final_hidden_state.shape, final_cell_state.shape)
+
+    #     hidden = final_hidden_state.squeeze(0)
+    #     # print(hidden.shape, hidden.unsqueeze(2).shape)
+    #     attn_weights = torch.bmm(output, hidden.unsqueeze(2)).squeeze(2)
+    #     soft_attn_weights = F.softmax(attn_weights, 1)
+    #     print(soft_attn_weights.shape)
+    #     return soft_attn_weights
