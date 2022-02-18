@@ -29,6 +29,7 @@ class DetectPage extends React.Component {
       wrong: false,
       title: null,
       voting: null,
+      error: false
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -41,12 +42,12 @@ class DetectPage extends React.Component {
 
   onSubmit(event) {
     console.log(this.state.url);
-    this.setState({
-      embedId: this.state.url.split("?v=")[1].split("&")[0],
-    });
-    // alert("A URL was submitted: " + this.state.url);
-    event.preventDefault();
-    axios
+    if (this.state.url.includes("?v=")){
+      this.setState({
+        embedId: this.state.url.split("?v=")[1].split("&")[0],
+        error: false
+      });
+      axios
       .post("http://127.0.0.1:5000/detect", {
         url: this.state.url,
         topic: this.state.topic,
@@ -64,6 +65,16 @@ class DetectPage extends React.Component {
         console.log(error);
         this.setState({ detection: false });
       });
+    }
+    else{
+      this.setState({
+        embedId: "",
+        error: true,
+      });
+    }
+    // alert("A URL was submitted: " + this.state.url);
+    event.preventDefault();
+    
   }
 
   handleChange(event) {
@@ -71,6 +82,7 @@ class DetectPage extends React.Component {
     this.setState({
       url: event.target.value,
       valid: event.target.value !== "" && this.state.topic !== "",
+      error: false
     });
     // if (this.state.url !== "" && this.state.topic !== ""){
     //   this.setState({ valid: true });
@@ -154,6 +166,8 @@ class DetectPage extends React.Component {
           <div>
             <TextField
               required
+              error={this.state.error}
+              helperText={this.state.error && "Enter valid URL."}
               style={{ width: 400, margin: 20 }}
               value={this.state.url}
               onChange={this.handleChange}
