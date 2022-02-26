@@ -33,7 +33,7 @@ class DetectionAPIHandler(Resource):
         }, {'_id': 0})
 
         final_ret = {
-            "status": "Success",
+            "status": "Error" if isinstance(detection, str) else "Success",
             "detection": detection,
             "voting": existing_vid['voting'] if existing_vid and 'voting' in existing_vid.keys() else {},
             "Title": existing_vid['Title'] if existing_vid and 'Title' in existing_vid.keys() else "Do you think the video is wrongly classified?",

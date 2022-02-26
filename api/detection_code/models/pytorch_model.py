@@ -37,13 +37,45 @@ def detector(text, model: torch.nn.Module, tokenizer_path, model_dict_path):
     # model = torch.load(model_path)
     model = model(args)
     # print("1", model)
-    # print(model_path)
-    # print(torch.load(model_path))
+    # print(model_dict_path)
+    # print(torch.load(model_dict_path))
     model.load_state_dict(torch.load(model_dict_path))
     # print("2", model)
     model.eval()
     # print("3", model)
     # print(seq.shape)
     det = model(seq)
+    if isinstance(model, LSTMAttentionModel):
+        det, attention = det
+        # print(seq)
+        # attn_map = []
+        # total_attn = 0
+        # s = ""
+        # # doc = docx.Document()
+        # # doc.add_heading('Video', 0)
+        # # highlight_para = doc.add_paragraph()
+        # words = []
+        # attns = []
+        # for i in range(seq.shape[1]):
+        #     total_attn += attention[0][i].tolist()
+        #     if seq[0][i] != 0:
+        #         word = tokenizer.index_word[seq[0][i].tolist()]
+        #         s += " " + word
+        #         attn_map.append({
+        #             "word": word,
+        #             "attn": attention[0][i].tolist(),
+        #         })
+        #         words.append(word)
+        #         attns.append(int(attention[0][i].tolist()*1000000)/10000)
+        #         # highlight_para.add_run(word).font.highlight_color = WD_COLOR_INDEX.
+        # # TODO Remove Comment for making a file
+        # # generate(words, attns, '911_debunked.tex')
+
+        # # attn_map = sorted(attn_map, key=lambda x: x['attn'])
+        # # print(attn_map)
+        # # with open('911_news.json', 'w') as f:
+        # #     f.write(json.dumps(attn_map))
+        # print(total_attn)
+
     print(det)
     return torch.argmax(det, dim=1).tolist()[0]-1

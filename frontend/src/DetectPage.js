@@ -55,6 +55,7 @@ class DetectPage extends React.Component {
       .then((response) => {
         console.log("SUCCESS", response);
         this.setState({
+          status_code: response.data.status,
           detection: response.data.detection,
           voting: response.data.voting,
           title: response.data.Title,
@@ -229,7 +230,23 @@ class DetectPage extends React.Component {
           ) : (
             <div></div>
           )}
-          {this.state.detection !== [] && (
+          {this.state.status_code === "Error" && this.state.detection !== "" && (
+            <Box
+            sx={{ flexDirection: "column", padding: 2 }}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Typography
+              component="span"
+              variant="h5"
+              color="text.primary"
+            >
+              {this.state.detection}
+            </Typography>
+            </Box>
+          )}
+          {this.state.status_code === "Success" && this.state.detection !== [] && (
             <List sx={{ width: "100%", bgcolor: "background.paper" }}>
               {this.state.detection.map((det, i) => (
                 <div>
