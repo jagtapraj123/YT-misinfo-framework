@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import { WithContext as ReactTags } from 'react-tag-input';
 import "./AddVideoDialog.css";
+import axios from "axios";
 
 const KeyCodes = {
   TAB: 9,
@@ -32,6 +33,7 @@ const delimiters = [KeyCodes.TAB, KeyCodes.COMMA, KeyCodes.ENTER, KeyCodes.SPACE
 export default function AddVideoDialog(props) {
   const { open, handleClose, handleSubmit, tags } = props;
   var [url, setURL] = React.useState("");
+  var [urlValid, setUrlValid] = React.useState(true);
   // var [topic, setTopic] = React.useState("911");
   var [label, setLabel] = React.useState(0);
   var [reason, setReason] = React.useState("");
@@ -84,8 +86,20 @@ export default function AddVideoDialog(props) {
                 fullWidth
                 required
                 value={url}
+                error={!urlValid}
+                helperText={!urlValid && "The URL is either not valid or already present in database."}
                 onChange={(event) => {
                   setURL(event.target.value);
+                  axios
+                  .get("http://127.0.0.1:5000/updateDataset?url="+event.target.value)
+                  .then((response) => {
+                    if (response.data.valid){
+                      setUrlValid(true);
+                    }
+                    else{
+                      setUrlValid(false);
+                    }
+                  })
                 }}
               />
             </Box>
@@ -264,7 +278,7 @@ export default function AddVideoDialog(props) {
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button
-            disabled={reason === "" || url === ""}
+            disabled={reason === "" || url === "" || !urlValid}
             onClick={() => {
               handleSubmit(url, selectedTags, newTags, label, reason);
             }}

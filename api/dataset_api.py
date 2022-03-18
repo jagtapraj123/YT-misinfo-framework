@@ -108,6 +108,18 @@ class DatasetGetterAPIHandler(Resource):
 
 
 class DatasetUpdaterAPIHandler(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('url', type=str)
+
+        args = parser.parse_args()
+        try:
+            Video_ID = args['url'].split('v=')[1].split('&')[0]
+            db = pymongo.MongoClient('localhost:27017')['YT_Misinfo_Dataset']
+            return {"valid": db['Video_Dataset'].find_one({"Video_ID": Video_ID}) is None}
+        except:
+            return {"valid": False}
+
     def post(self):
         parser = reqparse.RequestParser()
         # parser.add_argument('type', type=str)
