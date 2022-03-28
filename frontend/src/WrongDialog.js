@@ -23,9 +23,9 @@ import {
 export default function WrongDialog(props) {
   const { wrong, handleClose, handleSubmit } = props;
   const { vid_url, Title, Topic, normalized_annotation, voting } = wrong;
-  const neutrals = voting[0] ? voting[0].length : 0;
-  const misinfos = voting[1] ? voting[1].length : 0;
-  const debunking = voting[-1] ? voting[-1].length : 0;
+  const neutrals = voting ? (voting[0] ? voting[0].length : 0) : 0;
+  const misinfos = voting ? (voting[1] ? voting[1].length : 0) : 0;
+  const debunking = voting ? (voting[-1] ? voting[-1].length : 0) : 0;
   console.log(voting);
   var [label, setLabel] = React.useState(wrong.normalized_annotation);
   var [reason, setReason] = React.useState("");

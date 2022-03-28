@@ -5,6 +5,7 @@ from math import ceil
 import json
 from api.detection_code.scraper.metadata_scraper import getInfo
 from api.detection_code.scraper.caption_scraper import captionScraper
+import requests
 
 
 class DatasetGetterAPIHandler(Resource):
@@ -113,6 +114,12 @@ class DatasetUpdaterAPIHandler(Resource):
         parser.add_argument('url', type=str)
 
         args = parser.parse_args()
+
+        pattern = '"playabilityStatus":{"status":"ERROR","reason":"Video unavailable"'
+        request = requests.get(args['url'])
+        if pattern in request.text:
+            return {"valid": False}
+
         try:
             Video_ID = args['url'].split('v=')[1].split('&')[0]
             db = pymongo.MongoClient('localhost:27017')['YT_Misinfo_Dataset']
