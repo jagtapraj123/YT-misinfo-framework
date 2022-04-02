@@ -7,6 +7,7 @@ from api.detection_code.scraper.metadata_scraper import getInfo
 from api.detection_code.scraper.caption_scraper import captionScraper
 import requests
 from urllib.parse import urlparse, unquote
+import os
 
 
 class DatasetGetterAPIHandler(Resource):
@@ -24,7 +25,8 @@ class DatasetGetterAPIHandler(Resource):
                 "num_pages": 0,
                 "videoList": [],
             }
-        db = pymongo.MongoClient('localhost:27017')['YT_Misinfo_Dataset']
+        mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+        db = pymongo.MongoClient(mongo_uri)['YT_Misinfo_Dataset']
         filter = []
         for t in args['topicFilter']:
             filter.append({
@@ -46,7 +48,8 @@ class DatasetGetterAPIHandler(Resource):
 
 class DatasetTopicsAPIHandler(Resource):
     def get(self):
-        db = pymongo.MongoClient('localhost:27017')['YT_Misinfo_Dataset']
+        mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+        db = pymongo.MongoClient(mongo_uri)['YT_Misinfo_Dataset']
 
         mapping_list = list(db['Topics_Mapping'].find(
             {}, {'_id': 0, 'topics': 1, 'tag': 1}))
@@ -98,8 +101,11 @@ class DatasetUpdaterAPIHandler(Resource):
                 "reason": "Error parsing URL. Check if valid URL is entered."
             }
 
-        db = pymongo.MongoClient('localhost:27017')['YT_Misinfo_Dataset']
         Video_ID = url.split('v=')[1].split('&')[0]
+
+        mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+        db = pymongo.MongoClient(mongo_uri)['YT_Misinfo_Dataset']
+
         existing_vid = db['Video_Dataset'].find_one({
             "Video_ID": Video_ID
         }, {'_id': 0, 'tags': 1})
@@ -243,7 +249,8 @@ class BasicVideoCheckingAPIHandler(Resource):
                 return {"valid": False, "reason": "URL is not a YouTube URL."}
             Video_ID = url.split('v=')[1].split('&')[0]
             print(Video_ID)
-            db = pymongo.MongoClient('localhost:27017')['YT_Misinfo_Dataset']
+            mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+            db = pymongo.MongoClient(mongo_uri)['YT_Misinfo_Dataset']
             if db['Video_Dataset'].find_one({"Video_ID": Video_ID}) is None:
                 return {"valid": True}
             else:
@@ -261,7 +268,8 @@ class DatasetExtractAPIHandler(Resource):
 
         print(args)
 
-        db = pymongo.MongoClient('localhost:27017')['YT_Misinfo_Dataset']
+        mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+        db = pymongo.MongoClient(mongo_uri)['YT_Misinfo_Dataset']
         filter = []
         for t in args['topicFilter']:
             filter.append({

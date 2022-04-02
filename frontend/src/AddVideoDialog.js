@@ -98,7 +98,7 @@ export default function AddVideoDialog(props) {
               onChange={(event) => {
                 setURL(event.target.value);
                 axios
-                  .get("http://127.0.0.1:5000/checkVideo", {
+                  .get("http://127.0.0.1/checkVideo", {
                     params: { url: encodeURI(event.target.value) },
                   })
                   .then((response) => {

@@ -5,6 +5,7 @@ from flask_restful import Api, Resource, reqparse
 from flask_cors import CORS  # comment this on deployment
 from api.detection_api import DetectionAPIHandler
 from api.dataset_api import DatasetGetterAPIHandler, DatasetUpdaterAPIHandler, DatasetExtractAPIHandler, DatasetTopicsAPIHandler, BasicVideoCheckingAPIHandler
+import os
 
 app = Flask(__name__, static_url_path='', static_folder='frontend/build')
 CORS(app)  # comment this on deployment
@@ -24,4 +25,7 @@ api.add_resource(BasicVideoCheckingAPIHandler, '/checkVideo')
 api.add_resource(DatasetExtractAPIHandler, '/extractDataset')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    ENVIRONMENT_DEBUG = os.environ.get("APP_DEBUG", True)
+    ENVIRONMENT_PORT = os.environ.get("APP_PORT", 5000)
+    app.run(host='0.0.0.0', port=ENVIRONMENT_PORT, debug=ENVIRONMENT_DEBUG)

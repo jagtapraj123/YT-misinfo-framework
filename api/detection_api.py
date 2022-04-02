@@ -3,6 +3,7 @@ from api.detection_code.detect import detect
 import pymongo
 import requests
 from urllib.parse import urlparse
+import os
 
 
 class DetectionAPIHandler(Resource):
@@ -51,7 +52,9 @@ class DetectionAPIHandler(Resource):
             }
 
         videoID = url.split('?v=')[1].split('&')[0]
-        db = pymongo.MongoClient('localhost:27017')['YT_Misinfo_Dataset']
+        
+        mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+        db = pymongo.MongoClient(mongo_uri)['YT_Misinfo_Dataset']
         existing_vid = db['Video_Dataset'].find_one({
             "Video_ID": videoID
         }, {'_id': 0})

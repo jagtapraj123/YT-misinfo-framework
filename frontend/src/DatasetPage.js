@@ -40,7 +40,7 @@ export class DatasetPage extends Component {
   }
 
   init() {
-    axios.get("http://127.0.0.1:5000/getTopics").then((response) => {
+    axios.get("http://127.0.0.1/getTopics").then((response) => {
       this.setState({ topics: response.data.topics, tags: response.data.tags });
     });
   }
@@ -49,7 +49,7 @@ export class DatasetPage extends Component {
     console.log("Done");
     console.log(this.state.topicFilter);
     axios
-      .post("http://127.0.0.1:5000/getDataset", {
+      .post("http://127.0.0.1/getDataset", {
         page: this.state.page,
         topicFilter: [this.state.topicFilter],
       })
@@ -130,7 +130,7 @@ export class DatasetPage extends Component {
     console.log(vid_url, tags, label, reasons);
     this.setState({ wrong: false });
     axios
-      .post("http://127.0.0.1:5000/updateDataset", {
+      .post("http://127.0.0.1/updateDataset", {
         url: vid_url,
         tags: [tags],
         suggestedLabel: label,
@@ -147,7 +147,7 @@ export class DatasetPage extends Component {
   extractJSON() {
     if (this.state.topicFilter.length > 0) {
       axios
-        .post("http://127.0.0.1:5000/extractDataset", {
+        .post("http://127.0.0.1/extractDataset", {
           topicFilter: [this.state.topicFilter],
         })
         .then((response) => {
@@ -185,7 +185,7 @@ export class DatasetPage extends Component {
   ) {
     // this.setState({ add: false });
     axios
-      .post("http://127.0.0.1:5000/updateDataset", {
+      .post("http://127.0.0.1/updateDataset", {
         url: url,
         tags: [selectedTags.concat(newTags.map((t) => t.text))],
         suggestedLabel: label,
