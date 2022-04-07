@@ -15,13 +15,13 @@ api = Api(app)
 def serve(path):
     return send_from_directory(app.static_folder, 'index.html')
 
+
 api.add_resource(DetectionAPIHandler, '/detect')
 api.add_resource(DatasetGetterAPIHandler, '/getDataset')
 api.add_resource(DatasetTopicsAPIHandler, '/getTopics')
 api.add_resource(DatasetUpdaterAPIHandler, '/updateDataset')
 api.add_resource(BasicVideoCheckingAPIHandler, '/checkVideo')
 api.add_resource(DatasetExtractAPIHandler, '/extractDataset')
-# Misinfo : https://www.youtube.com/watch?v=FgpYLFrk0pQ
 
 if __name__ == '__main__':
     app.run(debug=True)

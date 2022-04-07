@@ -6,23 +6,15 @@ from urllib.parse import urlparse
 
 
 class DetectionAPIHandler(Resource):
-    def get(self):
-        return {
-            'resultStatus': 'SUCCESS',
-            'message': "Hello Api Handler : GET Request"
-        }
-
     def post(self):
         print(self)
         parser = reqparse.RequestParser()
-        # parser.add_argument('type', type=str)
         parser.add_argument('url', type=str)
         parser.add_argument('topic', type=str)
 
         args = parser.parse_args()
 
         print(args)
-        # note, the post req from frontend needs to match the strings here (e.g. 'type and 'message')
         url = args['url']
         pattern = '"playabilityStatus":{"status":"ERROR","reason":"Video unavailable"'
         try:
@@ -54,10 +46,10 @@ class DetectionAPIHandler(Resource):
         except:
             return {
                 "status": "Error",
-                    "url": url,
+                "url": url,
                 "reason": "Error parsing URL. Check if valid YouTube video URL is entered."
             }
-        
+
         videoID = url.split('?v=')[1].split('&')[0]
         db = pymongo.MongoClient('localhost:27017')['YT_Misinfo_Dataset']
         existing_vid = db['Video_Dataset'].find_one({
@@ -82,7 +74,7 @@ class DetectionAPIHandler(Resource):
             }
         except:
             return {
-                "status": "Error", 
+                "status": "Error",
                 "url": url,
                 "reason": "Error while classifying video. Check if video is in English."
             }
