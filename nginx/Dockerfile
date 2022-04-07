@@ -13,5 +13,5 @@ RUN apk --update add nginx && \
 COPY conf.d/app.conf /etc/nginx/conf.d/app.conf
 COPY conf.d/app.conf /etc/nginx/nginx.conf
 
-EXPOSE 80 443
+EXPOSE 1080
 CMD ["nginx", "-g", "daemon off;"]
