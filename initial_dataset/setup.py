@@ -40,7 +40,8 @@ def setupTagMapping(db, col, file):
     with open(file, 'r') as f:
         data = json.loads(f.read())
 
-    db = pymongo.MongoClient('localhost:27017')[db]
+    mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+    db = pymongo.MongoClient(mongo_uri)[db]
     collection = db[col]
 
     topics = set()
