@@ -124,6 +124,6 @@ def getInfo(url):
             number_of_comments = number_of_comments.replace(',', '')
         views = views.split()[0].replace(',', '')
 
-        return {"url": new_url, "Likes": likes, "Dislikes": dislikes, "Title": title, "Description": description, "Num_of_Views": views, "Date_of_Upload": date, "Number_of_Comments": number_of_comments, "Hashtags": hashTags}
+        return {"vid_url": new_url, "Likes": likes, "Dislikes": dislikes, "Title": title, "Description": description, "Num_of_Views": views, "Date_of_Upload": date, "Number_of_Comments": number_of_comments, "Hashtags": hashTags}
     except:
         return None

@@ -1,5 +1,4 @@
 import torch
-from langdetect import detect as lang
 from keras.preprocessing.text import Tokenizer, tokenizer_from_json
 from keras.preprocessing.sequence import pad_sequences
 from api.detection_code.models.lstm_attn import LSTMAttentionModel
@@ -17,9 +16,6 @@ STOPWORDS = set([ "a", "about", "above", "after", "again", "against", "all", "am
     "your", "yours", "yourself", "yourselves" ])
 
 def detector(text, model: torch.nn.Module, tokenizer_path, model_dict_path):
-    if not lang(text) == "en":
-        return "Captions not Engligh!\nUnable to detect..."
-    print(lang(text))
     text = ' '.join(word for word in text.split() if word not in STOPWORDS)
     with open(tokenizer_path) as f:
         tokenizer = tokenizer_from_json(f.read())

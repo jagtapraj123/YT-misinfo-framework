@@ -24,6 +24,7 @@ class DetectPage extends React.Component {
         status: 2000,
       },
       detection: [],
+      reason: "",
       topic: "",
       valid: false,
       wrong: false,
@@ -42,38 +43,39 @@ class DetectPage extends React.Component {
 
   onSubmit(event) {
     console.log(this.state.url);
-    if (this.state.url.includes("?v=")){
-      this.setState({
-        embedId: this.state.url.split("?v=")[1].split("&")[0],
-        error: false
-      });
-      axios
-      .post("http://127.0.0.1:5000/detect", {
-        url: this.state.url,
-        topic: this.state.topic,
-      })
-      .then((response) => {
-        console.log("SUCCESS", response);
+    axios
+    .post("http://127.0.0.1:5000/detect", {
+      url: this.state.url,
+      topic: this.state.topic,
+    })
+    .then((response) => {
+      console.log("SUCCESS", response);
+      if (response.data.status === "Success") {
         this.setState({
           status_code: response.data.status,
           detection: response.data.detection,
           voting: response.data.voting,
           title: response.data.Title,
+          error: false,
+          url: response.data.url,
+          embedId: response.data.url.split("?v=")[1].split("&")[0],
         });
-        // setGetMessage(response);
-      })
-      .catch((error) => {
-        console.log(error);
-        this.setState({ detection: false });
-      });
-    }
-    else{
-      this.setState({
-        embedId: "",
-        error: true,
-      });
-    }
-    // alert("A URL was submitted: " + this.state.url);
+      }
+      else {
+        this.setState({
+          status_code: response.data.status,
+          reason: response.data.reason,
+          error: true,
+          url: response.data.url,
+          embedId: "",
+        })
+      }
+      // setGetMessage(response);
+    })
+    .catch((error) => {
+      console.log(error);
+      this.setState({ detection: false });
+    });
     event.preventDefault();
     
   }
@@ -230,7 +232,7 @@ class DetectPage extends React.Component {
           ) : (
             <div></div>
           )}
-          {this.state.status_code === "Error" && this.state.detection !== "" && (
+          {this.state.status_code === "Error" && this.state.reason !== "" && (
             <Box
             sx={{ flexDirection: "column", padding: 2 }}
             display="flex"
@@ -242,7 +244,7 @@ class DetectPage extends React.Component {
               variant="h5"
               color="text.primary"
             >
-              {this.state.detection}
+              {this.state.reason}
             </Typography>
             </Box>
           )}

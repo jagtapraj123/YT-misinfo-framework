@@ -1,4 +1,5 @@
 from api.detection_code.scraper.caption_scraper import captionScraper
+from langdetect import detect as lang
 from api.detection_code.models.pytorch_model import detector
 import torch.nn as nn
 from api.detection_code.models.lstm_attn import LSTMAttentionModel
@@ -12,6 +13,12 @@ def detect(videoID, topic):
     print(captions)
     # print(detector(captions, 'api/detection_code/models/saved_models/lstm_attn_911/tokenizer.json', 'api/detection_code/models/saved_models/lstm_attn_911/model_state_dict.pth'))
     # return captions
+    print(captions == None)
+    if captions == None:
+        return "No captions present for the video."
+    elif not lang(captions) == "en":
+        return "Captions not Engligh!\nUnable to detect..."
+
     return [
         {
             "model": "LSTM with Attention",

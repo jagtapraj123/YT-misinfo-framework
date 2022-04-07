@@ -225,21 +225,23 @@ class DatasetUpdaterAPIHandler(Resource):
         args['tags'] = list(set(args['tags']))
         print(args['tags'])
         # Check if url already present.
+        url = args['url']
         db = pymongo.MongoClient('localhost:27017')['YT_Misinfo_Dataset']
         existing_vid = db['Video_Dataset'].find_one({
-            "vid_url": args['url']
+            "vid_url": url
         }, {'_id': 0, 'tags': 1})
         print(existing_vid)
         if not existing_vid:
             # If no, then scrape the data using scraper, then add to voting poll.
-            vid_info = getInfo(args['url'])
+            vid_info = getInfo(url)
+            url = vid_info['vid_url']
             print(vid_info)
             if not vid_info:
                 return {
                     "status": "Failed",
                     "reason": "Video url not valid."
                 }
-            Video_ID = vid_info['url'].split('v=')[1].split('&')[0]
+            Video_ID = url.split('v=')[1].split('&')[0]
             vid_info['Video_ID'] = Video_ID
             existing_vid = db['Video_Dataset'].find_one({
                 "Video_ID": vid_info['Video_ID']
@@ -262,7 +264,7 @@ class DatasetUpdaterAPIHandler(Resource):
             
             db['Video_Dataset'].find_one_and_update(
                 {
-                    "vid_url": vid_info['url']
+                    "vid_url": url
                 },
                 {
                     "$set": vid_info
@@ -278,7 +280,7 @@ class DatasetUpdaterAPIHandler(Resource):
             newTags = list(newTags)
             db['Video_Dataset'].find_one_and_update(
                 {
-                    "vid_url": args['url']
+                    "vid_url": url
                 },
                 {
                     "$set": {
@@ -290,13 +292,13 @@ class DatasetUpdaterAPIHandler(Resource):
         # If yes/newly added, then add to voting poll.
         for r in args['reasons']:
             existing_vid = db['Video_Dataset'].find_one({
-                "vid_url": args['url'],
+                "vid_url": url,
                 "voting.{}.reason".format(args['suggestedLabel']): r
             }, {'_id': 0})
             if existing_vid:
                 db['Video_Dataset'].find_one_and_update(
                     {
-                        "vid_url": args['url'],
+                        "vid_url": url,
                         "voting.{}.reason".format(args['suggestedLabel']): r
                     },
                     {
@@ -308,7 +310,7 @@ class DatasetUpdaterAPIHandler(Resource):
             else:
                 db['Video_Dataset'].find_one_and_update(
                     {
-                        "vid_url": args['url']
+                        "vid_url": url
                     },
                     {
                         "$push": {
@@ -347,22 +349,24 @@ class BasicVideoCheckingAPIHandler(Resource):
 
         args = parser.parse_args()
         args['url'] = unquote(args['url'])
+        url = args['url']
 
         pattern = '"playabilityStatus":{"status":"ERROR","reason":"Video unavailable"'
         try:
-            request = requests.get(args['url'])
-            if pattern in request.text:
+            request = requests.get(url)
+            url = request.url
+            if request.status_code != 200 or pattern in request.text:
                 return {"valid": False, "reason": "URL is not a valid YouTube video."}
         except:
             return {"valid": False, "reason": "Error parsing URL. Check if valid URL is entered."}
 
         try:
-            website = urlparse(args['url']).netloc
+            website = urlparse(url).netloc
             website = website.lower().split('.')
             print(website)
             if "youtube" not in website:
                 return {"valid": False, "reason": "URL is not a YouTube URL."}
-            Video_ID = args['url'].split('v=')[1].split('&')[0]
+            Video_ID = url.split('v=')[1].split('&')[0]
             print(Video_ID)
             db = pymongo.MongoClient('localhost:27017')['YT_Misinfo_Dataset']
             if db['Video_Dataset'].find_one({"Video_ID": Video_ID}) is None:
