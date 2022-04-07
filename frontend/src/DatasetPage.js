@@ -41,7 +41,6 @@ export class DatasetPage extends Component {
 
   init() {
     axios.get("http://127.0.0.1:5000/getTopics").then((response) => {
-      // console.log(response)
       this.setState({ topics: response.data.topics, tags: response.data.tags });
     });
   }
@@ -61,7 +60,6 @@ export class DatasetPage extends Component {
           videoList: response.data.videoList,
           // topics: response.data.topics,
         });
-        // setGetMessage(response);
       })
       .catch((error) => {
         console.log(error);
@@ -75,11 +73,13 @@ export class DatasetPage extends Component {
 
   handleTopicsFilterChange(event) {
     console.log(event.target.name, event.target.checked);
-    console.log(this.state.topics[event.target.name])
+    console.log(this.state.topics[event.target.name]);
     if (event.target.checked) {
       this.setState(
-        { 
-          topicFilter: this.state.topicFilter.concat(this.state.topics[event.target.name]),
+        {
+          topicFilter: this.state.topicFilter.concat(
+            this.state.topics[event.target.name]
+          ),
           page: 1,
         },
         this.getContent
@@ -90,7 +90,7 @@ export class DatasetPage extends Component {
           topicFilter: this.state.topicFilter.filter(
             (topic) => !this.state.topics[event.target.name].includes(topic)
           ),
-          page : 1,
+          page: 1,
         },
         this.getContent
       );
@@ -138,8 +138,6 @@ export class DatasetPage extends Component {
       })
       .then((response) => {
         console.log("SUCCESS", response.data);
-
-        // setGetMessage(response);
       })
       .catch((error) => {
         console.log(error);
@@ -147,7 +145,7 @@ export class DatasetPage extends Component {
   }
 
   extractJSON() {
-    if (this.state.topicFilter.length > 0){
+    if (this.state.topicFilter.length > 0) {
       axios
         .post("http://127.0.0.1:5000/extractDataset", {
           topicFilter: [this.state.topicFilter],
@@ -160,12 +158,11 @@ export class DatasetPage extends Component {
           a.href = url;
           a.download = "YT_Video_Dataset.json";
           a.click();
-          // setGetMessage(response);
         })
         .catch((error) => {
           console.log(error);
         });
-      }
+    }
   }
 
   handleAddVideoDialogOpen() {
@@ -176,7 +173,16 @@ export class DatasetPage extends Component {
     this.setState({ add: false });
   }
 
-  handleAddVideoDialogSubmit(url, selectedTags, newTags, label, reasons, setUrlValid, setURLFailReason, setLoading) {
+  handleAddVideoDialogSubmit(
+    url,
+    selectedTags,
+    newTags,
+    label,
+    reasons,
+    setUrlValid,
+    setURLFailReason,
+    setLoading
+  ) {
     // this.setState({ add: false });
     axios
       .post("http://127.0.0.1:5000/updateDataset", {
@@ -187,16 +193,14 @@ export class DatasetPage extends Component {
       })
       .then((response) => {
         console.log("SUCCESS", response.data);
-        if (response.data.status !== "Success"){
+        if (response.data.status !== "Success") {
           setUrlValid(false);
           setURLFailReason(response.data.reason);
           setLoading(false);
-        }
-        else {
+        } else {
           setLoading(false);
           this.setState({ add: false });
         }
-        // setGetMessage(response);
       })
       .catch((error) => {
         console.log(error);
@@ -270,7 +274,11 @@ export class DatasetPage extends Component {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={this.state.topics[topic].filter((tag) => this.state.topicFilter.includes(tag)).length > 0}
+                      checked={
+                        this.state.topics[topic].filter((tag) =>
+                          this.state.topicFilter.includes(tag)
+                        ).length > 0
+                      }
                       name={topic}
                       onChange={this.handleTopicsFilterChange}
                     />
@@ -312,18 +320,7 @@ export class DatasetPage extends Component {
               handleWrongDialogOpen={this.handleWrongDialogOpen}
             />
           </Box>
-
-          {/* <BasicFilteringGrid/> */}
         </Box>
-        {/* <Fab
-          variant="extended"
-          color="primary"
-          aria-label="add"
-          sx={{ position: "absolute", bottom: "5%", right: "5%" }}
-        >
-          <AddIcon sx={{ mr: 1 }} />
-          Add New Video
-        </Fab> */}
         {this.state.wrong && (
           <WrongDialog
             wrong={this.state.wrong}

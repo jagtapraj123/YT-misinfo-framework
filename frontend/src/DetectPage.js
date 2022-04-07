@@ -30,7 +30,7 @@ class DetectPage extends React.Component {
       wrong: false,
       title: null,
       voting: null,
-      error: false
+      error: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -44,40 +44,37 @@ class DetectPage extends React.Component {
   onSubmit(event) {
     console.log(this.state.url);
     axios
-    .post("http://127.0.0.1:5000/detect", {
-      url: this.state.url,
-      topic: this.state.topic,
-    })
-    .then((response) => {
-      console.log("SUCCESS", response);
-      if (response.data.status === "Success") {
-        this.setState({
-          status_code: response.data.status,
-          detection: response.data.detection,
-          voting: response.data.voting,
-          title: response.data.Title,
-          error: false,
-          url: response.data.url,
-          embedId: response.data.url.split("?v=")[1].split("&")[0],
-        });
-      }
-      else {
-        this.setState({
-          status_code: response.data.status,
-          reason: response.data.reason,
-          error: true,
-          url: response.data.url,
-          embedId: "",
-        })
-      }
-      // setGetMessage(response);
-    })
-    .catch((error) => {
-      console.log(error);
-      this.setState({ detection: false });
-    });
+      .post("http://127.0.0.1:5000/detect", {
+        url: this.state.url,
+        topic: this.state.topic,
+      })
+      .then((response) => {
+        console.log("SUCCESS", response);
+        if (response.data.status === "Success") {
+          this.setState({
+            status_code: response.data.status,
+            detection: response.data.detection,
+            voting: response.data.voting,
+            title: response.data.Title,
+            error: false,
+            url: response.data.url,
+            embedId: response.data.url.split("?v=")[1].split("&")[0],
+          });
+        } else {
+          this.setState({
+            status_code: response.data.status,
+            reason: response.data.reason,
+            error: true,
+            url: response.data.url,
+            embedId: "",
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({ detection: false });
+      });
     event.preventDefault();
-    
   }
 
   handleChange(event) {
@@ -85,14 +82,8 @@ class DetectPage extends React.Component {
     this.setState({
       url: event.target.value,
       valid: event.target.value !== "" && this.state.topic !== "",
-      error: false
+      error: false,
     });
-    // if (this.state.url !== "" && this.state.topic !== ""){
-    //   this.setState({ valid: true });
-    // }
-    // else{
-    //   this.setState({ valid: false });
-    // }
   }
 
   handleRadioChange(event) {
@@ -101,12 +92,6 @@ class DetectPage extends React.Component {
       topic: event.target.value,
       valid: this.state.url !== "" && event.target.value !== "",
     });
-    // if (this.state.url !== "" && this.state.topic !== ""){
-    //   this.setState({ valid: true });
-    // }
-    // else{
-    //   this.setState({ valid: false });
-    // }
   }
 
   handleWrongDialogOpen(wrn) {
@@ -131,8 +116,6 @@ class DetectPage extends React.Component {
       })
       .then((response) => {
         console.log("SUCCESS", response.data);
-
-        // setGetMessage(response);
       })
       .catch((error) => {
         console.log(error);
@@ -164,8 +147,6 @@ class DetectPage extends React.Component {
           autoComplete="off"
           onSubmit={this.onSubmit}
         >
-          {/* <div style={{ padding: 16, margin: "auto" }} > */}
-          {/* <form onSubmit={this.onSubmit}> */}
           <div>
             <TextField
               required
@@ -179,14 +160,6 @@ class DetectPage extends React.Component {
               variant="outlined"
             />
           </div>
-          {/* <RadioGroup>
-          <Radio
-            label="A"
-            value="a"
-            name="radio-buttons"
-            inputProps={{ 'aria-label': 'A' }}
-          />
-        </RadioGroup> */}
           <RadioGroup
             aria-label="topic"
             name="controlled-radio-buttons-group"
@@ -234,18 +207,14 @@ class DetectPage extends React.Component {
           )}
           {this.state.status_code === "Error" && this.state.reason !== "" && (
             <Box
-            sx={{ flexDirection: "column", padding: 2 }}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Typography
-              component="span"
-              variant="h5"
-              color="text.primary"
+              sx={{ flexDirection: "column", padding: 2 }}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
             >
-              {this.state.reason}
-            </Typography>
+              <Typography component="span" variant="h5" color="text.primary">
+                {this.state.reason}
+              </Typography>
             </Box>
           )}
           {this.state.status_code === "Success" && this.state.detection !== [] && (
@@ -291,28 +260,10 @@ class DetectPage extends React.Component {
                   </Box>
                   <Divider />
                 </div>
-                // )) ||
-                //   // (typeof this.state.detection.value === "string" && (
-                //   //   <Box
-                //   //     display="flex"
-                //   //     alignItems="center"
-                //   //     justifyContent="center"
-                //   //   >
-                //   //     <Typography
-                //   //       component="span"
-                //   //       variant="h5"
-                //   //       color="text.primary"
-                //   //     >
-                //   //       {this.state.detection}
-                //   //     </Typography>
-                //   //   </Box>
-                //   // ))
               ))}
             </List>
           )}
         </Box>
-        {/* <Container
-        > */}
         {this.state.wrong && (
           <WrongDialog
             wrong={this.state.wrong}
@@ -320,7 +271,6 @@ class DetectPage extends React.Component {
             handleSubmit={this.handleWrongDialogSubmit}
           />
         )}
-        {/* </Container> */}
       </div>
     );
   }

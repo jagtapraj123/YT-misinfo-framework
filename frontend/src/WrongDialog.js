@@ -39,19 +39,26 @@ export default function WrongDialog(props) {
       <Dialog open={wrong} onClose={handleClose}>
         <DialogTitle>{Title}</DialogTitle>
         <DialogContent>
-          {typeof(normalized_annotation) !== "undefined" && (<DialogContentText>
-            <Typography>
-              The video is currently labelled as{" "}
-              <Typography component="span" variant="body" color="text.primary">
-                {(normalized_annotation === 0 && "Neutral") ||
-                  (normalized_annotation === 1 && "Misinformation") ||
-                  (normalized_annotation === -1 && "Debunking Misinformation")}
+          {typeof normalized_annotation !== "undefined" && (
+            <DialogContentText>
+              <Typography>
+                The video is currently labelled as{" "}
+                <Typography
+                  component="span"
+                  variant="body"
+                  color="text.primary"
+                >
+                  {(normalized_annotation === 0 && "Neutral") ||
+                    (normalized_annotation === 1 && "Misinformation") ||
+                    (normalized_annotation === -1 &&
+                      "Debunking Misinformation")}
+                </Typography>
+                .
               </Typography>
-              .
-            </Typography>
-            <Typography>Do you think it is mis-labelled?</Typography>
-            <Typography>Kindly let us know why...</Typography>
-          </DialogContentText>)}
+              <Typography>Do you think it is mis-labelled?</Typography>
+              <Typography>Kindly let us know why...</Typography>
+            </DialogContentText>
+          )}
           <Divider />
           <Box
             sx={{
@@ -231,32 +238,52 @@ export default function WrongDialog(props) {
           <Button onClick={handleClose}>Cancel</Button>
           <Button
             disabled={
-              (label === normalized_annotation || (add && reason === "") || (!add && !preSelected.includes(true))) 
+              label === normalized_annotation ||
+              (add && reason === "") ||
+              (!add && !preSelected.includes(true))
               // &&
               // !preSelected.includes(true)
             }
             onClick={() => {
               var reasons = [];
-              console.log(reasons, label, neutrals, label === 0 && neutrals > 0);
+              console.log(
+                reasons,
+                label,
+                neutrals,
+                label === 0 && neutrals > 0
+              );
               console.log(preSelected.includes(true));
-              if (preSelected.includes(true)){
-                if (label === 0 && neutrals > 0){
-                  // var selected = voting[0].filter((vote, i) => preSelected[i]);
+              if (preSelected.includes(true)) {
+                if (label === 0 && neutrals > 0) {
                   console.log(voting[0].filter((vote, i) => preSelected[i]));
-                  reasons = reasons.concat(voting[0].filter((vote, i) => preSelected[i]).map((sel, i) => sel.reason));
-                }
-                else if (label === 1 && misinfos > 0){
-                  // var selected = voting[0].filter((vote, i) => preSelected[i]);
-                  console.log(voting[1].filter((vote, i) => preSelected[neutrals+i]));
-                  reasons = reasons.concat(voting[1].filter((vote, i) => preSelected[neutrals+i]).map((sel, i) => sel.reason));
-                }
-                else if (label === -1 && debunking > 0){
-                  // var selected = voting[0].filter((vote, i) => preSelected[i]);
-                  console.log(voting[-1].filter((vote, i) => preSelected[neutrals+misinfos+i]));
-                  reasons = reasons.concat(voting[-1].filter((vote, i) => preSelected[neutrals+misinfos+i]).map((sel, i) => sel.reason));
+                  reasons = reasons.concat(
+                    voting[0]
+                      .filter((vote, i) => preSelected[i])
+                      .map((sel, i) => sel.reason)
+                  );
+                } else if (label === 1 && misinfos > 0) {
+                  console.log(
+                    voting[1].filter((vote, i) => preSelected[neutrals + i])
+                  );
+                  reasons = reasons.concat(
+                    voting[1]
+                      .filter((vote, i) => preSelected[neutrals + i])
+                      .map((sel, i) => sel.reason)
+                  );
+                } else if (label === -1 && debunking > 0) {
+                  console.log(
+                    voting[-1].filter(
+                      (vote, i) => preSelected[neutrals + misinfos + i]
+                    )
+                  );
+                  reasons = reasons.concat(
+                    voting[-1]
+                      .filter((vote, i) => preSelected[neutrals + misinfos + i])
+                      .map((sel, i) => sel.reason)
+                  );
                 }
               }
-              if (add && reason !== ""){
+              if (add && reason !== "") {
                 reasons.push(reason);
               }
               console.log(reasons);

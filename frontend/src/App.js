@@ -1,68 +1,3 @@
-// import logo from './logo.svg';
-// import './App.css';
-// import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-// import Button from '@mui/material/Button';
-// import Tabs from '@mui/material/Tabs';
-// import Tab from '@mui/material/Tab';
-
-// class App extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       message: {
-//         status: 2000,
-//       },
-//       value: 0
-//     };
-//     this.onClick = this.onClick.bind(this);
-//   }
-
-//   onClick () {
-//     axios
-//     .post('http://127.0.0.1:5000/flask/hello', {'message': 'yt'})
-//     .then((response) => {
-//       console.log("SUCCESS", response);
-//       this.setState({message: response});
-//       // setGetMessage(response);
-//     }).catch(error => {
-//       console.log(error);
-//     });
-//   }
-
-//   render() {
-//     return (
-//       <div className="App">
-//         <header className="App-header">
-
-//           {/* <img src={logo} className="App-logo" alt="logo" /> */}
-//           {/* <p>
-//             Edit <code> src/App.js </code> and save to reload.
-//           </p> */}
-//           {/* <a
-//             className="App-link"
-//             href="https://reactjs.org"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             Learn React
-//           </a> */}
-//           <div>{this.state.message.status === 200 ?
-//             <h3>{this.state.message.data.message}</h3>
-//             :
-//             <h3>LOADING</h3>}</div>
-//           <Button
-//             onClick={this.onClick}>
-//             Click me
-//           </Button>
-//         </header>
-//       </div>
-//     );
-//   }
-// }
-
-// export default App;
-
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
@@ -83,7 +18,6 @@ class App extends React.Component {
         status: 2000,
       },
     };
-    // this.detectPage = new DetectPage();
   }
 
   handleTabChange = (event, value) => {
@@ -91,19 +25,6 @@ class App extends React.Component {
     this.setState({
       tabValue: value,
     });
-  };
-
-  onClick = () => {
-    axios
-      .post("http://127.0.0.1:5000/flask/hello", { message: "yt" })
-      .then((response) => {
-        console.log("SUCCESS", response);
-        this.setState({ message: response });
-        // setGetMessage(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   };
 
   render() {
@@ -120,20 +41,10 @@ class App extends React.Component {
           </Tabs>
         </Box>
         <TabPanel value={this.state.tabValue} index={0}>
-          {/* Detect Tab */}
-          {/* {this.detectPage} */}
           <DetectPage />
         </TabPanel>
         <TabPanel value={this.state.tabValue} index={1}>
           <DatasetPage />
-          {/* <div>
-                        {this.state.message.status === 200 ? (
-                        <h3>{this.state.message.data.message}</h3>
-                        ) : (
-                        <h3>LOADING</h3>
-                        )}
-                    </div> */}
-          {/* <Button onClick={this.onClick}>Click me</Button> */}
         </TabPanel>
       </div>
     );

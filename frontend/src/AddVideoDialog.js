@@ -18,7 +18,7 @@ import {
   Checkbox,
   CircularProgress,
 } from "@mui/material";
-import { WithContext as ReactTags } from 'react-tag-input';
+import { WithContext as ReactTags } from "react-tag-input";
 import "./AddVideoDialog.css";
 import axios from "axios";
 
@@ -29,7 +29,12 @@ const KeyCodes = {
   SPACE: 32,
 };
 
-const delimiters = [KeyCodes.TAB, KeyCodes.COMMA, KeyCodes.ENTER, KeyCodes.SPACE];
+const delimiters = [
+  KeyCodes.TAB,
+  KeyCodes.COMMA,
+  KeyCodes.ENTER,
+  KeyCodes.SPACE,
+];
 
 export default function AddVideoDialog(props) {
   const { open, handleClose, handleSubmit, tags } = props;
@@ -37,17 +42,16 @@ export default function AddVideoDialog(props) {
   var [urlValid, setUrlValid] = React.useState(true);
   var [loading, setLoading] = React.useState(false);
   var [urlFailReason, setURLFailReason] = React.useState("");
-  // var [topic, setTopic] = React.useState("911");
   var [label, setLabel] = React.useState(0);
   var [reason, setReason] = React.useState("");
   var [selectedTags, setSelectedTags] = React.useState([]);
   var [newTags, setNewTags] = React.useState([]);
 
-  const handleDelete = i => {
+  const handleDelete = (i) => {
     setNewTags(newTags.filter((tag, index) => index !== i));
   };
 
-  const handleAddition = tag => {
+  const handleAddition = (tag) => {
     console.log(tag);
     setNewTags([...newTags, tag]);
   };
@@ -62,8 +66,8 @@ export default function AddVideoDialog(props) {
     setNewTags(updatedTags);
   };
 
-  const handleTagClick = index => {
-    console.log('The tag at index ' + index + ' was clicked');
+  const handleTagClick = (index) => {
+    console.log("The tag at index " + index + " was clicked");
   };
 
   return (
@@ -77,157 +81,80 @@ export default function AddVideoDialog(props) {
             </Typography>
           </DialogContentText>
           <Box
-              sx={{
-                paddingTop: 2,
-              }}
-            >
-              <TextField
-                id="outlined-multiline-flexible"
-                label="Video URL"
-                multiline
-                maxRows={10}
-                fullWidth
-                required
-                value={url}
-                error={!urlValid}
-                helperText={!urlValid && urlFailReason}
-                onChange={(event) => {
-                  setURL(event.target.value);
-                  axios
-                  .get("http://127.0.0.1:5000/checkVideo", { params: { url: encodeURI(event.target.value) }})
-                  .then((response) => {
-                    if (response.data.valid){
-                      setUrlValid(true);
-                    }
-                    else{
-                      setUrlValid(false);
-                      setURLFailReason(response.data.reason);
-                    }
-                  })
-                }}
-              />
-            </Box>
-          <Divider />
-          {/* <Box
             sx={{
               paddingTop: 2,
             }}
           >
-            <FormLabel component="legend">Topic:</FormLabel>
-            <RadioGroup
-              aria-label="topic"
-              name="controlled-radio-buttons-group"
-              value={topic}
+            <TextField
+              id="outlined-multiline-flexible"
+              label="Video URL"
+              multiline
+              maxRows={10}
+              fullWidth
+              required
+              value={url}
+              error={!urlValid}
+              helperText={!urlValid && urlFailReason}
               onChange={(event) => {
-                setTopic(event.target.value);
+                setURL(event.target.value);
+                axios
+                  .get("http://127.0.0.1:5000/checkVideo", {
+                    params: { url: encodeURI(event.target.value) },
+                  })
+                  .then((response) => {
+                    if (response.data.valid) {
+                      setUrlValid(true);
+                    } else {
+                      setUrlValid(false);
+                      setURLFailReason(response.data.reason);
+                    }
+                  });
               }}
-            >
-              <List>
-                {topics.map((topic, i) => (
-                <FormControlLabel
-                  control={<Radio />}
-                  label={topic.name}
-                  value={topic.value}
-                />
-              ))}
-              <FormControlLabel
-              value="911"
-              control={<Radio />}
-              label="9/11 Conspiracy Theory"
             />
-            <FormControlLabel
-              value="chemtrails"
-              control={<Radio />}
-              label="Chemtrails Conspiracy Theory"
-            />
-            <FormControlLabel
-              value="flatearth"
-              control={<Radio />}
-              label="Flat Earth Theory"
-            />
-            <FormControlLabel
-              value="moonlanding"
-              control={<Radio />}
-              label="Moonlanding "
-            />
-            <FormControlLabel
-              value="vaccines"
-              control={<Radio />}
-              label="Vaccine Controversy"
-            />
-            </List>
-            </RadioGroup>
           </Box>
-          <Divider /> */}
+          <Divider />
           <Box
             sx={{
               paddingTop: 2,
             }}
           >
             <FormLabel component="legend">Tags:</FormLabel>
-              <List>
+            <List>
               {tags.map((tag, i) => (
                 <FormControlLabel
-                  control={<Checkbox 
-                    checked={selectedTags.includes(tag)}
-                  name={tag}
-                  onChange={(event) => {if (event.target.checked) {setSelectedTags([...selectedTags, event.target.name])} else {setSelectedTags(selectedTags.filter(
-                    (tag) => tag !== event.target.name
-                  ),)}}}
-                  />}
+                  control={
+                    <Checkbox
+                      checked={selectedTags.includes(tag)}
+                      name={tag}
+                      onChange={(event) => {
+                        if (event.target.checked) {
+                          setSelectedTags([...selectedTags, event.target.name]);
+                        } else {
+                          setSelectedTags(
+                            selectedTags.filter(
+                              (tag) => tag !== event.target.name
+                            )
+                          );
+                        }
+                      }}
+                    />
+                  }
                   label={tag}
                   // value={tag}
                 />
               ))}
-              {/* <TextField
-                id="outlined-multiline-flexible"
-                label="Other Tags"
-                multiline
-                maxRows={10}
-                placeholder="Comma separated list of tags..."
-                fullWidth
-                value={reason}
-                onChange={(event) => {
-                  setReason(event.target.value);
-                }}
-              /> */}
               <div>
-              <ReactTags
-                tags={newTags}
-                // suggestions={()=>{}}
-                delimiters={delimiters}
-                handleDelete={handleDelete}
-                handleAddition={handleAddition}
-                handleDrag={handleDrag}
-                handleTagClick={handleTagClick}
-                inputFieldPosition="inline"
-              />
+                <ReactTags
+                  tags={newTags}
+                  // suggestions={()=>{}}
+                  delimiters={delimiters}
+                  handleDelete={handleDelete}
+                  handleAddition={handleAddition}
+                  handleDrag={handleDrag}
+                  handleTagClick={handleTagClick}
+                  inputFieldPosition="inline"
+                />
               </div>
-              {/* <FormControlLabel
-              value="911"
-              control={<Radio />}
-              label="9/11 Conspiracy Theory"
-            />
-            <FormControlLabel
-              value="chemtrails"
-              control={<Radio />}
-              label="Chemtrails Conspiracy Theory"
-            />
-            <FormControlLabel
-              value="flatearth"
-              control={<Radio />}
-              label="Flat Earth Theory"
-            />
-            <FormControlLabel
-              value="moonlanding"
-              control={<Radio />}
-              label="Moonlanding "
-            />
-            <FormControlLabel
-              value="vaccines"
-              control={<Radio />}
-              label="Vaccine Controversy"
-            /> */}
             </List>
           </Box>
           <Divider />
@@ -285,23 +212,32 @@ export default function AddVideoDialog(props) {
             disabled={reason === "" || url === "" || !urlValid}
             onClick={() => {
               setLoading(true);
-              handleSubmit(url, selectedTags, newTags, label, [reason], setUrlValid, setURLFailReason, setLoading);
+              handleSubmit(
+                url,
+                selectedTags,
+                newTags,
+                label,
+                [reason],
+                setUrlValid,
+                setURLFailReason,
+                setLoading
+              );
             }}
           >
             Submit
           </Button>
           {loading && (
-          <CircularProgress
-            size={24}
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              marginTop: '-12px',
-              marginLeft: '-12px',
-            }}
-          />
-        )}
+            <CircularProgress
+              size={24}
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                marginTop: "-12px",
+                marginLeft: "-12px",
+              }}
+            />
+          )}
         </DialogActions>
       </Dialog>
     </div>
