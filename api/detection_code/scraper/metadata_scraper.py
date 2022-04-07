@@ -15,6 +15,7 @@ def getInfo(url):
     views = None
     date = None
     number_of_comments = None
+    new_url = url
     # comments = []
 
     options = ChromeOptions()
@@ -81,6 +82,9 @@ def getInfo(url):
                 number_of_comments = driver.find_element_by_css_selector("ytd-comments div#title h2#count span").text
             except:
                 pass
+        
+            new_url = driver.current_url
+            print(new_url)
             
             # if collectComments > 0:
             #     # Wait for loading page and then scroll down
@@ -118,6 +122,6 @@ def getInfo(url):
             number_of_comments = number_of_comments.replace(',', '')
         views = views.split()[0].replace(',', '')
 
-        return {"Likes": likes, "Dislikes": dislikes, "Title": title, "Description": description, "Num_of_Views": views, "Date_of_Upload": date, "Number_of_Comments": number_of_comments, "Hashtags": hashTags}
+        return {"url": new_url, "Likes": likes, "Dislikes": dislikes, "Title": title, "Description": description, "Num_of_Views": views, "Date_of_Upload": date, "Number_of_Comments": number_of_comments, "Hashtags": hashTags}
     except:
         return None

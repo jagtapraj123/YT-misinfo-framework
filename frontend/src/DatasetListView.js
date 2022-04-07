@@ -41,8 +41,8 @@ function DatasetListView(props) {
                         {video.tags &&
                           video.tags.map((tag, i) => " " + tag + " ") +
                             " — "}{" "}
-                        {video.Topic && video.Topic.name + " — "}{" "}
-                        {(video.normalized_annotation === 0 && "Neutral") ||
+                        {/* {video.Topic && video.Topic.name + " — "}{" "} */}
+                        {(typeof(video.normalized_annotation) === "undefined" && "Under-moderation") || (video.normalized_annotation === 0 && "Neutral") ||
                           (video.normalized_annotation === 1 &&
                             "Misinformation") ||
                           (video.normalized_annotation === -1 &&
@@ -52,7 +52,7 @@ function DatasetListView(props) {
                           variant="text"
                           onClick={() => handleWrongDialogOpen(video)}
                         >
-                          Don't Agree?
+                          {(typeof(video.normalized_annotation) === "undefined" && "Vote Now!") || "Don't Agree?"}
                         </Button>
                       </Typography>
                     </div>

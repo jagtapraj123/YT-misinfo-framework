@@ -16,6 +16,7 @@ import {
   FormLabel,
   List,
   Checkbox,
+  CircularProgress,
 } from "@mui/material";
 import { WithContext as ReactTags } from 'react-tag-input';
 import "./AddVideoDialog.css";
@@ -34,6 +35,8 @@ export default function AddVideoDialog(props) {
   const { open, handleClose, handleSubmit, tags } = props;
   var [url, setURL] = React.useState("");
   var [urlValid, setUrlValid] = React.useState(true);
+  var [loading, setLoading] = React.useState(false);
+  var [urlFailReason, setURLFailReason] = React.useState("");
   // var [topic, setTopic] = React.useState("911");
   var [label, setLabel] = React.useState(0);
   var [reason, setReason] = React.useState("");
@@ -87,17 +90,18 @@ export default function AddVideoDialog(props) {
                 required
                 value={url}
                 error={!urlValid}
-                helperText={!urlValid && "The URL is either not valid or already present in database."}
+                helperText={!urlValid && urlFailReason}
                 onChange={(event) => {
                   setURL(event.target.value);
                   axios
-                  .get("http://127.0.0.1:5000/updateDataset?url="+event.target.value)
+                  .get("http://127.0.0.1:5000/checkVideo", { params: { url: encodeURI(event.target.value) }})
                   .then((response) => {
                     if (response.data.valid){
                       setUrlValid(true);
                     }
                     else{
                       setUrlValid(false);
+                      setURLFailReason(response.data.reason);
                     }
                   })
                 }}
@@ -280,11 +284,24 @@ export default function AddVideoDialog(props) {
           <Button
             disabled={reason === "" || url === "" || !urlValid}
             onClick={() => {
-              handleSubmit(url, selectedTags, newTags, label, reason);
+              setLoading(true);
+              handleSubmit(url, selectedTags, newTags, label, [reason], setUrlValid, setURLFailReason, setLoading);
             }}
           >
             Submit
           </Button>
+          {loading && (
+          <CircularProgress
+            size={24}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              marginTop: '-12px',
+              marginLeft: '-12px',
+            }}
+          />
+        )}
         </DialogActions>
       </Dialog>
     </div>

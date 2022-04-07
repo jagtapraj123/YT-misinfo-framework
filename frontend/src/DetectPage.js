@@ -117,15 +117,15 @@ class DetectPage extends React.Component {
     this.setState({ wrong: false });
   }
 
-  handleWrongDialogSubmit(vid_url, topic, label, reason) {
-    console.log(vid_url, label, reason);
+  handleWrongDialogSubmit(vid_url, tags, label, reasons) {
+    console.log(vid_url, label, reasons);
     this.setState({ wrong: false });
     axios
       .post("http://127.0.0.1:5000/updateDataset", {
         url: vid_url,
-        topic: topic,
+        tags: [tags],
         suggestedLabel: label,
-        reason: reason,
+        reasons: [reasons],
       })
       .then((response) => {
         console.log("SUCCESS", response.data);
@@ -277,7 +277,7 @@ class DetectPage extends React.Component {
                           this.handleWrongDialogOpen({
                             Title: this.state.title,
                             vid_url: this.state.url,
-                            Topic: { value: this.state.topic },
+                            tags: [this.state.topic],
                             normalized_annotation: det.value,
                             voting: this.state.voting,
                           })
