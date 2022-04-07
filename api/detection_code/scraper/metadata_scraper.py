@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import chromedriver_binary
 
 def getInfo(url):
     # Initialize Vars
@@ -19,10 +20,11 @@ def getInfo(url):
     # comments = []
 
     options = ChromeOptions()
-    options.add_argument("headless")
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
     # Open Chrome Browser Window
     try:
-        with Chrome(executable_path=r'./chromedriver', options=options) as driver:
+        with Chrome(options=options) as driver:
             wait = WebDriverWait(driver, 15)
             # Hit the url
             driver.get(url)
