@@ -44,7 +44,7 @@ class DetectPage extends React.Component {
   onSubmit(event) {
     console.log(this.state.url);
     axios
-      .post("http://127.0.0.1/detect", {
+      .post("http://jackfruit.iitgoa.ac.in:1080/detect", {
         url: this.state.url,
         topic: this.state.topic,
       })
@@ -108,7 +108,7 @@ class DetectPage extends React.Component {
     console.log(vid_url, label, reasons);
     this.setState({ wrong: false });
     axios
-      .post("http://127.0.0.1/updateDataset", {
+      .post("http://jackfruit.iitgoa.ac.in:1080/updateDataset", {
         url: vid_url,
         tags: [tags],
         suggestedLabel: label,

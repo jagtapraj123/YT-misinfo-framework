@@ -98,7 +98,7 @@ export default function AddVideoDialog(props) {
               onChange={(event) => {
                 setURL(event.target.value);
                 axios
-                  .get("http://127.0.0.1/checkVideo", {
+                  .get("http://jackfruit.iitgoa.ac.in:1080/checkVideo", {
                     params: { url: encodeURI(event.target.value) },
                   })
                   .then((response) => {
