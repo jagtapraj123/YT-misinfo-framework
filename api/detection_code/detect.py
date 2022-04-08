@@ -13,7 +13,7 @@ def detect(videoID, topic):
     if captions == None:
         return "No captions present for the video."
     elif not lang(captions) == "en":
-        return "Captions not Engligh!\nUnable to detect..."
+        return "Captions not in English! Unable to detect..."
 
     return [
         {
