@@ -9,6 +9,8 @@ import requests
 from urllib.parse import urlparse, unquote
 import os
 
+MONGODB_URI = f"mongodb://{os.environ['MONGODB_USERNAME']}:{os.environ['MONGODB_PASSWORD']}@{os.environ['MONGODB_HOSTNAME']}:27017/{os.environ['MONGODB_DATABASE']}?authSource=admin"
+# MONGODB_URI = f"mongodb://{os.environ['MONGODB_USERNAME']}:{os.environ['MONGODB_PASSWORD']}@{os.environ['MONGODB_HOSTNAME']}:27017/{os.environ['MONGODB_DATABASE']}"
 
 class DatasetGetterAPIHandler(Resource):
     def post(self):
@@ -25,8 +27,10 @@ class DatasetGetterAPIHandler(Resource):
                 "num_pages": 0,
                 "videoList": [],
             }
-        mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
-        db = pymongo.MongoClient(mongo_uri)['YT_Misinfo_Dataset']
+        # mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+        print(MONGODB_URI)
+        mongoclient = pymongo.MongoClient(MONGODB_URI)
+        db = mongoclient[os.environ['MONGODB_DATABASE']]
         filter = []
         for t in args['topicFilter']:
             filter.append({
@@ -48,8 +52,11 @@ class DatasetGetterAPIHandler(Resource):
 
 class DatasetTopicsAPIHandler(Resource):
     def get(self):
-        mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
-        db = pymongo.MongoClient(mongo_uri)['YT_Misinfo_Dataset']
+        # mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+        
+        print(MONGODB_URI)
+        mongoclient = pymongo.MongoClient(MONGODB_URI)
+        db = mongoclient[os.environ['MONGODB_DATABASE']]
 
         mapping_list = list(db['Topics_Mapping'].find(
             {}, {'_id': 0, 'topics': 1, 'tag': 1}))
@@ -103,8 +110,10 @@ class DatasetUpdaterAPIHandler(Resource):
 
         Video_ID = url.split('v=')[1].split('&')[0]
 
-        mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
-        db = pymongo.MongoClient(mongo_uri)['YT_Misinfo_Dataset']
+        # mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+        print(MONGODB_URI)
+        mongoclient = pymongo.MongoClient(MONGODB_URI)
+        db = mongoclient[os.environ['MONGODB_DATABASE']]
 
         existing_vid = db['Video_Dataset'].find_one({
             "Video_ID": Video_ID
@@ -113,12 +122,17 @@ class DatasetUpdaterAPIHandler(Resource):
         if not existing_vid:
             # If no, then scrape the data using scraper, then add to voting poll.
             vid_info = getInfo(url)
-            url = vid_info['vid_url']
             print(vid_info)
             if not vid_info:
                 return {
                     "status": "Failed",
                     "reason": "Video url not valid."
+                }
+            url = vid_info['vid_url']
+            if vid_info['Title'] is None or vid_info['Title'] == "":
+                return {
+                    "status": "Failed",
+                    "reason": "Could not scrape video details."
                 }
             Video_ID = url.split('v=')[1].split('&')[0]
             vid_info['Video_ID'] = Video_ID
@@ -249,8 +263,10 @@ class BasicVideoCheckingAPIHandler(Resource):
                 return {"valid": False, "reason": "URL is not a YouTube URL."}
             Video_ID = url.split('v=')[1].split('&')[0]
             print(Video_ID)
-            mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
-            db = pymongo.MongoClient(mongo_uri)['YT_Misinfo_Dataset']
+            # mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+            print(MONGODB_URI)
+            mongoclient = pymongo.MongoClient(MONGODB_URI)
+            db = mongoclient[os.environ['MONGODB_DATABASE']]
             if db['Video_Dataset'].find_one({"Video_ID": Video_ID}) is None:
                 return {"valid": True}
             else:
@@ -268,8 +284,10 @@ class DatasetExtractAPIHandler(Resource):
 
         print(args)
 
-        mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
-        db = pymongo.MongoClient(mongo_uri)['YT_Misinfo_Dataset']
+        # mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+        print(MONGODB_URI)
+        mongoclient = pymongo.MongoClient(MONGODB_URI)
+        db = mongoclient[os.environ['MONGODB_DATABASE']]
         filter = []
         for t in args['topicFilter']:
             filter.append({

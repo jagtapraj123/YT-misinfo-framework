@@ -5,16 +5,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      shm_size: 2gb
     container_name: flask
     image: python:3.9
     restart: unless-stopped
+    shm_size: 2gb
     environment:
       APP_ENV: "prod"
       APP_DEBUG: "False"
       APP_PORT: 5000
-      MONGODB_DATABASE: YT_Misinfo_Dataset
-      MONGODB_USERNAME: rajj
-      MONGODB_PASSWORD: jaggu1234
+      MONGODB_DATABASE: ${MONGODB_DATABASE}
+      MONGODB_USERNAME: ${MONGODB_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
       MONGODB_HOSTNAME: mongodb
     volumes:
       - appdata:/var/www
@@ -30,13 +32,13 @@ services:
     restart: unless-stopped
     command: mongod --auth
     environment:
-      MONGO_INITDB_ROOT_USERNAME: rajj
-      MONGO_INITDB_ROOT_PASSWORD: jaggu1234
-      MONGO_INITDB_DATABASE: YT_Misinfo_Dataset
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
       MONGODB_DATA_DIR: /data/db
       MONDODB_LOG_DIR: /dev/null
     volumes:
-      - $PWD/../data/mongodbdata:/data/db
+      - ${MONGODB_LOCATION}:/data/db
     networks:
       - backend
 

@@ -10,7 +10,7 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
-import axios from "axios";
+import axios from "./AxiosConfig.js";
 import PropTypes from "prop-types";
 import WrongDialog from "./WrongDialog";
 
@@ -44,7 +44,7 @@ class DetectPage extends React.Component {
   onSubmit(event) {
     console.log(this.state.url);
     axios
-      .post("http://jackfruit.iitgoa.ac.in:1080/detect", {
+      .post("/detect", {
         url: this.state.url,
         topic: this.state.topic,
       })
@@ -108,7 +108,7 @@ class DetectPage extends React.Component {
     console.log(vid_url, label, reasons);
     this.setState({ wrong: false });
     axios
-      .post("http://jackfruit.iitgoa.ac.in:1080/updateDataset", {
+      .post("/updateDataset", {
         url: vid_url,
         tags: [tags],
         suggestedLabel: label,

@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import { WithContext as ReactTags } from "react-tag-input";
 import "./AddVideoDialog.css";
-import axios from "axios";
+import axios from "./AxiosConfig.js";
 
 const KeyCodes = {
   TAB: 9,
@@ -98,7 +98,7 @@ export default function AddVideoDialog(props) {
               onChange={(event) => {
                 setURL(event.target.value);
                 axios
-                  .get("http://jackfruit.iitgoa.ac.in:1080/checkVideo", {
+                  .get("/checkVideo", {
                     params: { url: encodeURI(event.target.value) },
                   })
                   .then((response) => {

@@ -2,7 +2,6 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import axios from "axios";
 import DetectPage from "./DetectPage";
 import DatasetPage from "./DatasetPage";
 
@@ -62,7 +61,7 @@ function TabPanel(props) {
     >
       {/* {value === index && ( */}
       <Box sx={{ p: 3 }}>
-        <p>{children}</p>
+        <Box>{children}</Box>
       </Box>
       {/* )} */}
     </div>

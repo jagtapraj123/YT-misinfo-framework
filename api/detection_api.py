@@ -5,6 +5,8 @@ import requests
 from urllib.parse import urlparse
 import os
 
+MONGODB_URI = f"mongodb://{os.environ['MONGODB_USERNAME']}:{os.environ['MONGODB_PASSWORD']}@{os.environ['MONGODB_HOSTNAME']}:27017/{os.environ['MONGODB_DATABASE']}?authSource=admin"
+# MONGODB_URI = f"mongodb://{os.environ['MONGODB_USERNAME']}:{os.environ['MONGODB_PASSWORD']}@{os.environ['MONGODB_HOSTNAME']}:27017/{os.environ['MONGODB_DATABASE']}"
 
 class DetectionAPIHandler(Resource):
     def post(self):
@@ -53,8 +55,10 @@ class DetectionAPIHandler(Resource):
 
         videoID = url.split('?v=')[1].split('&')[0]
         
-        mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
-        db = pymongo.MongoClient(mongo_uri)['YT_Misinfo_Dataset']
+        # mongo_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+        print(MONGODB_URI)
+        mongoclient = pymongo.MongoClient(MONGODB_URI)
+        db = mongoclient[os.environ['MONGODB_DATABASE']]
         existing_vid = db['Video_Dataset'].find_one({
             "Video_ID": videoID
         }, {'_id': 0})

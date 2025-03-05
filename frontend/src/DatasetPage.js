@@ -4,7 +4,7 @@ import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import DatasetListView from "./DatasetListView";
-import axios from "axios";
+import axios from "./AxiosConfig.js";
 import AddIcon from "@mui/icons-material/Add";
 import DownloadIcon from "@mui/icons-material/Download";
 import WrongDialog from "./WrongDialog";
@@ -40,7 +40,7 @@ export class DatasetPage extends Component {
   }
 
   init() {
-    axios.get("http://jackfruit.iitgoa.ac.in:1080/getTopics").then((response) => {
+    axios.get("/getTopics").then((response) => {
       this.setState({ topics: response.data.topics, tags: response.data.tags });
     });
   }
@@ -49,7 +49,7 @@ export class DatasetPage extends Component {
     console.log("Done");
     console.log(this.state.topicFilter);
     axios
-      .post("http://jackfruit.iitgoa.ac.in:1080/getDataset", {
+      .post("/getDataset", {
         page: this.state.page,
         topicFilter: [this.state.topicFilter],
       })
@@ -130,7 +130,7 @@ export class DatasetPage extends Component {
     console.log(vid_url, tags, label, reasons);
     this.setState({ wrong: false });
     axios
-      .post("http://jackfruit.iitgoa.ac.in:1080/updateDataset", {
+      .post("/updateDataset", {
         url: vid_url,
         tags: [tags],
         suggestedLabel: label,
@@ -147,7 +147,7 @@ export class DatasetPage extends Component {
   extractJSON() {
     if (this.state.topicFilter.length > 0) {
       axios
-        .post("http://jackfruit.iitgoa.ac.in:1080/extractDataset", {
+        .post("/extractDataset", {
           topicFilter: [this.state.topicFilter],
         })
         .then((response) => {
@@ -185,7 +185,7 @@ export class DatasetPage extends Component {
   ) {
     // this.setState({ add: false });
     axios
-      .post("http://jackfruit.iitgoa.ac.in:1080/updateDataset", {
+      .post("/updateDataset", {
         url: url,
         tags: [selectedTags.concat(newTags.map((t) => t.text))],
         suggestedLabel: label,
