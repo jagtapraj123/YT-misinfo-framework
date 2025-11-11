@@ -4,6 +4,10 @@ import pymongo
 import requests
 from urllib.parse import urlparse
 import os
+import redis
+
+redis_host = os.getenv("REDIS_HOST", "redis")
+redis_client = redis.Redis(host=redis_host, port=6379, db=0)
 
 MONGODB_URI = f"mongodb://{os.environ['MONGODB_USERNAME']}:{os.environ['MONGODB_PASSWORD']}@{os.environ['MONGODB_HOSTNAME']}:27017/{os.environ['MONGODB_DATABASE']}?authSource=admin"
 # MONGODB_URI = f"mongodb://{os.environ['MONGODB_USERNAME']}:{os.environ['MONGODB_PASSWORD']}@{os.environ['MONGODB_HOSTNAME']}:27017/{os.environ['MONGODB_DATABASE']}"
@@ -72,6 +76,7 @@ class DetectionAPIHandler(Resource):
                     "url": url,
                     "reason": detection
                 }
+            redis_client.incr("num_videos_classified")
             return {
                 "status": "Success",
                 "url": url,

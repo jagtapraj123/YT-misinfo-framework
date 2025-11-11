@@ -8,6 +8,10 @@ from api.detection_code.scraper.caption_scraper import captionScraper
 import requests
 from urllib.parse import urlparse, unquote
 import os
+import redis
+
+redis_host = os.getenv("REDIS_HOST", "redis")
+redis_client = redis.Redis(host=redis_host, port=6379, db=0)
 
 MONGODB_URI = f"mongodb://{os.environ['MONGODB_USERNAME']}:{os.environ['MONGODB_PASSWORD']}@{os.environ['MONGODB_HOSTNAME']}:27017/{os.environ['MONGODB_DATABASE']}?authSource=admin"
 # MONGODB_URI = f"mongodb://{os.environ['MONGODB_USERNAME']}:{os.environ['MONGODB_PASSWORD']}@{os.environ['MONGODB_HOSTNAME']}:27017/{os.environ['MONGODB_DATABASE']}"
@@ -22,6 +26,7 @@ class DatasetGetterAPIHandler(Resource):
 
         print(args)
         if len(args['topicFilter']) == 0:
+            redis_client.incr("num_dataset_retrieved")
             return {
                 "status": "Success",
                 "num_pages": 0,
@@ -41,6 +46,7 @@ class DatasetGetterAPIHandler(Resource):
             "$or": filter
         }, {'_id': 0})[(args['page']-1)*10:args['page']*10])
         print(len(vids))
+        redis_client.incr("num_dataset_retrieved")
         return {
             "status": "Success",
             "num_pages": ceil(db['Video_Dataset'].count_documents({
@@ -232,6 +238,7 @@ class DatasetUpdaterAPIHandler(Resource):
                     upsert=True
                 )
 
+        redis_client.incr("num_dataset_updated")
         return {
             "status": "Success",
         }

@@ -18,10 +18,12 @@ services:
       MONGODB_USERNAME: ${MONGODB_USERNAME}
       MONGODB_PASSWORD: ${MONGODB_PASSWORD}
       MONGODB_HOSTNAME: mongodb
+      REDIS_HOST: redis
     volumes:
       - appdata:/var/www
     depends_on:
       - mongodb
+      - redis
     networks:
       - frontend
       - backend
@@ -63,6 +65,16 @@ services:
     networks:
       - frontend
 
+  redis:
+    image: redis:7
+    container_name: redis_server
+    restart: always
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - backend
+
 networks:
   frontend:
     driver: bridge
@@ -75,4 +87,6 @@ volumes:
   appdata:
     driver: local
   nginxdata:
+    driver: local
+  redis_data:
     driver: local

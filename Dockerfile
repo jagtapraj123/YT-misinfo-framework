@@ -29,7 +29,6 @@ RUN dpkg -i google-chrome-stable_current_amd64.deb; apt-get -fy install
 ADD ./requirements.txt /var/www/requirements.txt
 RUN pip install --default-timeout=100 -r requirements.txt
 ADD . /var/www/
-RUN pip install gunicorn
 
 RUN addgroup --gid $GROUP_ID www
 RUN adduser --uid $USER_ID --shell /bin/sh --gid $GROUP_ID www 
